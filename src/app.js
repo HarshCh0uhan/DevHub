@@ -2,12 +2,16 @@ const express = require("express");
 
 const app = express()
 
-app.use("/", (req, res) => {
-    res.send("Hello From the Dashboard !!!")
+app.get("/harsh", (req, res) => {
+    res.send({"firstname": "Harsh", "lastname": "Chouhan"})
 })
 
-app.use("/test", (req, res) => {
-    res.send("Hello From the Test Server !!!")
+app.post("/harsh", (req, res) => {
+    res.send("Database Got Updated !!!")
+})
+
+app.delete("/harsh", (req, res) => {
+    res.send("Database Got Deleted !!!")
 })
 
 app.use("/harsh", (req, res) => {
