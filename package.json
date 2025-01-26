@@ -1,0 +1,20 @@
+{
+  "name": "devhub",
+  "version": "1.0.0",
+  "description": "hub for devs",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "js"
+  ],
+  "author": "Harsh Chouhan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
