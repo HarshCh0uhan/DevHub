@@ -6,8 +6,10 @@ const {connectDB} = require("./config/db")
 
 const {User} = require("./models/user")
 
+// Middleware used to Convert JSON -> Js Obj 
 app.use(express.json())
 
+// This is Create API - POST Method is used
 app.post("/signup", async (req, res) => {
     const user = new User(req.body);
 
@@ -19,6 +21,45 @@ app.post("/signup", async (req, res) => {
         res.status(400).send("Error Saving the User : " + err.message);
     }
 
+})
+
+// Get User E-Mail
+app.get("/user", async (req, res) => {
+    try{
+        const user = await User.findOne(req.body);
+        if(!user){
+            res.status(400).send("Not Found")
+        }
+        else{
+            res.send(user)
+        }
+    }
+    catch(err){
+        res.send("No User Found" + err.message)
+    }
+    // try{
+    //     const user = await User.find(req.body);
+    //     if(user.length == 0){
+    //         res.status(400).send("Not Found")
+    //     }
+    //     else{
+    //         res.send(user)
+    //     }
+    // }
+    // catch(err){
+    //     res.send("No User Found" + err.message)
+    // }
+})
+
+// Get All User or Feed API
+app.get("/feed", async (req, res) => {
+    try{
+        const user = await User.find({});
+        res.send(user)
+    }
+    catch(err){
+        res.send("No User Found : " + err.message)
+    }
 })
 
 connectDB().then(() => {
