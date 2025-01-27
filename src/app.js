@@ -6,15 +6,10 @@ const {connectDB} = require("./config/db")
 
 const {User} = require("./models/user")
 
+app.use(express.json())
+
 app.post("/signup", async (req, res) => {
-    const user = new User({
-        firstName: "Harsh",
-        lastName: "Chouhan",
-        emsilId: "harsh@chouhan.com",
-        password: "harsh@123",
-        age: 20,
-        gender: "Male",
-    });
+    const user = new User(req.body);
 
     try{
         await user.save()
