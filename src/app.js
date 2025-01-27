@@ -6,12 +6,17 @@ const {User} = require("./models/user")
 
 const {validateSignUpData} = require("./utils/validation")
 
+const cookieParser = require("cookie-parser")
+
+const jwt = require("jsonwebtoken")
+
 const bcrypt = require("bcrypt")
 
 const app = express()
 
 // Middleware used to Convert JSON -> Js Obj 
 app.use(express.json())
+app.use(cookieParser()) 
 
 // This is Create API - POST Method is used
 app.post("/signup", async (req, res) => {
@@ -37,6 +42,27 @@ app.post("/signup", async (req, res) => {
     }
 })
 
+app.get("/profile", async (req, res) => {
+    try{const cookie = req.cookies;
+
+    const {token} = cookie;
+    console.log(cookie)
+    if(!token) throw new Error("Invalid Token")
+
+    // Validate the Token
+    const decodedMessage = await jwt.verify(token, "H@RSH$30032004")
+    const {_id} = decodedMessage
+
+    const user = await User.findById(_id);
+    if(!user) throw new Error("User does not Exist")
+
+    res.send(user)
+    }
+    catch(err){
+        res.status(400).send("Error Saving the User : " + err.message);
+    }
+})
+
 app.post("/login", async (req, res) => {
     try{
         const {emailId, password} = req.body
@@ -51,6 +77,14 @@ app.post("/login", async (req, res) => {
             throw new Error("Invalid Credentials")
         }
         else{
+
+            // Create a JWT Token
+            const token = jwt.sign({_id: user._id}, "H@RSH$30032004")
+            console.log("Token : " + token)
+
+            // Add the Token to Cookie and send the response back to ther server
+            res.cookie("token", token);
+
             res.send("Login Successful !!!")
         }
     }
