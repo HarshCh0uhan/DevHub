@@ -26,7 +26,7 @@ app.post("/signup", async (req, res) => {
 // Get User E-Mail
 app.get("/user", async (req, res) => {
     try{
-        const user = await User.findOne(req.body);
+        const user = await User.findOneAndUpdate(req.body);
         if(!user){
             res.status(400).send("Not Found")
         }
@@ -55,6 +55,19 @@ app.get("/user", async (req, res) => {
 app.get("/feed", async (req, res) => {
     try{
         const user = await User.find({});
+        res.send(user)
+    }
+    catch(err){
+        res.send("No User Found : " + err.message)
+    }
+})
+
+// Update
+app.patch("/patch", async (req, res) => {
+    try{
+        const user = await User.findByIdAndUpdate(req.body, req.body, {
+            runValidators: true,
+        });
         res.send(user)
     }
     catch(err){
