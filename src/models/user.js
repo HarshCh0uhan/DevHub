@@ -7,14 +7,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         minLength: 3,
         maxLength: 50,
-        match: [/^[a-zA-Z\s]*$/, 'Firstname must contain only letters and spaces'],
+        validate(value){
+            if(!validator.isAlpha(value)) throw new ErrorEvent("Invalid NAme : " + value)
+        }
     },
     lastName: {
         type: String,
         required: true,
         minLength: 3,
         maxLength: 50,
-        match: [/^[a-zA-Z\s]*$/, 'Firstname must contain only letters and spaces'],
+        validate(value){
+            if(!validator.isAlpha(value)) throw new ErrorEvent("Invalid NAme : " + value)
+        }
     },
     emailId: {
         type: String,
@@ -52,10 +56,11 @@ const userSchema = new mongoose.Schema({
     skills: {
         type: [String],
         default: "NA",
-        validate: {
-            validator: (skills) => skills.length <= 10, // Limit to a maximum of 10 skills
-            message: 'A user can have at most 10 skills',
-          },
+        validate(skills){
+            if(!skills.length >= 10){
+                throw new Error("A user can have at most 10 skills you wrote : " + skills.length)
+            }
+        }
     }
 }, {timestamps: true});
 

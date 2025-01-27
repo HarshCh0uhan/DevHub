@@ -1,26 +1,62 @@
 const express = require("express");
 
-const app = express()
-
 const {connectDB} = require("./config/db")
 
 const {User} = require("./models/user")
+
+const {validateSignUpData} = require("./utils/validation")
+
+const bcrypt = require("bcrypt")
+
+const app = express()
 
 // Middleware used to Convert JSON -> Js Obj 
 app.use(express.json())
 
 // This is Create API - POST Method is used
 app.post("/signup", async (req, res) => {
-    const user = new User(req.body);
-
+    
     try{
+    // Validation of Data
+    validateSignUpData(req)
+
+    // Encrypt
+    const {firstName, lastName, emailId, password, age, gender} = req.body
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = new User({
+        firstName, lastName, emailId, password: passwordHash, age, gender
+    });
+
         await user.save()
         res.send("User Added Successfully !!!");
     }
     catch (err){
         res.status(400).send("Error Saving the User : " + err.message);
     }
+})
 
+app.post("/login", async (req, res) => {
+    try{
+        const {emailId, password} = req.body
+        
+        const user = await User.findOne({emailId: emailId});
+
+        if(!user) throw new Error("Invalid Credentials");
+
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+
+        if(!isPasswordValid){
+            throw new Error("Invalid Credentials")
+        }
+        else{
+            res.send("Login Successful !!!")
+        }
+    }
+    catch (err){
+        res.status(400).send("Error Saving the User : " + err.message);
+    }
 })
 
 // Get User E-Mail
