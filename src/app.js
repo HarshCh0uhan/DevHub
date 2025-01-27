@@ -63,9 +63,15 @@ app.get("/feed", async (req, res) => {
 })
 
 // Update
-app.patch("/patch", async (req, res) => {
+app.patch("/patch/:userId", async (req, res) => {
     try{
-        const user = await User.findByIdAndUpdate(req.body, req.body, {
+        const ALLOWED_UPDATES = ["skills", "gender", "age", "skills"];
+    
+        const isUpdateAllowed = Object.keys(req.body).every((k) => ALLOWED_UPDATES.includes(k));
+    
+        if(!isUpdateAllowed) throw new Error("Update is not Allowed")
+        
+        const user = await User.findByIdAndUpdate(req.params?.userId, req.body, {
             runValidators: true,
         });
         res.send(user)
