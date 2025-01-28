@@ -12,6 +12,8 @@ const jwt = require("jsonwebtoken")
 
 const bcrypt = require("bcrypt")
 
+const {userAuth} = require("./middlewares/auth")
+
 const app = express()
 
 // Middleware used to Convert JSON -> Js Obj 
@@ -42,27 +44,6 @@ app.post("/signup", async (req, res) => {
     }
 })
 
-app.get("/profile", async (req, res) => {
-    try{const cookie = req.cookies;
-
-    const {token} = cookie;
-    console.log(cookie)
-    if(!token) throw new Error("Invalid Token")
-
-    // Validate the Token
-    const decodedMessage = await jwt.verify(token, "H@RSH$30032004")
-    const {_id} = decodedMessage
-
-    const user = await User.findById(_id);
-    if(!user) throw new Error("User does not Exist")
-
-    res.send(user)
-    }
-    catch(err){
-        res.status(400).send("Error Saving the User : " + err.message);
-    }
-})
-
 app.post("/login", async (req, res) => {
     try{
         const {emailId, password} = req.body
@@ -71,7 +52,7 @@ app.post("/login", async (req, res) => {
 
         if(!user) throw new Error("Invalid Credentials");
 
-        const isPasswordValid = await bcrypt.compare(password, user.password)
+        const isPasswordValid = await user.validatePassword(password)
 
         if(!isPasswordValid){
             throw new Error("Invalid Credentials")
@@ -79,9 +60,10 @@ app.post("/login", async (req, res) => {
         else{
 
             // Create a JWT Token
-            const token = jwt.sign({_id: user._id}, "H@RSH$30032004")
-            console.log("Token : " + token)
+            const token = await user.getJWT();
 
+            console.log("Token : " + token)
+            
             // Add the Token to Cookie and send the response back to ther server
             res.cookie("token", token);
 
@@ -93,62 +75,24 @@ app.post("/login", async (req, res) => {
     }
 })
 
-// Get User E-Mail
-app.get("/user", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
     try{
-        const user = await User.findOneAndUpdate(req.body);
-        if(!user){
-            res.status(400).send("Not Found")
-        }
-        else{
-            res.send(user)
-        }
-    }
-    catch(err){
-        res.send("No User Found" + err.message)
-    }
-    // try{
-    //     const user = await User.find(req.body);
-    //     if(user.length == 0){
-    //         res.status(400).send("Not Found")
-    //     }
-    //     else{
-    //         res.send(user)
-    //     }
-    // }
-    // catch(err){
-    //     res.send("No User Found" + err.message)
-    // }
-})
+        const user = req.user;
 
-// Get All User or Feed API
-app.get("/feed", async (req, res) => {
-    try{
-        const user = await User.find({});
         res.send(user)
     }
     catch(err){
-        res.send("No User Found : " + err.message)
+        res.status(400).send("Error Saving the User : " + err.message);
     }
 })
 
-// Update
-app.patch("/patch/:userId", async (req, res) => {
-    try{
-        const ALLOWED_UPDATES = ["skills", "gender", "age", "skills"];
-    
-        const isUpdateAllowed = Object.keys(req.body).every((k) => ALLOWED_UPDATES.includes(k));
-    
-        if(!isUpdateAllowed) throw new Error("Update is not Allowed")
-        
-        const user = await User.findByIdAndUpdate(req.params?.userId, req.body, {
-            runValidators: true,
-        });
-        res.send(user)
-    }
-    catch(err){
-        res.send("No User Found : " + err.message)
-    }
+app.post("/sendConnectionRequest", userAuth, (req, res) => {
+    const user = req.user;
+
+    // Logic for Sending Request
+    console.log("Sending a Connection Request")
+
+    res.send(user.firstName + " Sent a Request")
 })
 
 connectDB().then(() => {
