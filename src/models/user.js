@@ -63,7 +63,13 @@ const userSchema = new mongoose.Schema({
                 throw new Error("A user can have at most 10 skills you wrote : " + skills.length)
             }
         }
-    }
+    },
+    // about: {
+    //     type: String,
+    //     default: "NA",
+    //     minLength: 50,
+    //     maxLength: 100
+    // }
 }, {timestamps: true});
 
 userSchema.methods.getJWT = async function (){
