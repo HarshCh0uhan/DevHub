@@ -6,8 +6,9 @@ const app = express()
 const authRouter = require("./router/auth")
 const profileRouter = require("./router/profile")
 const requestRouter = require("./router/request")
+const userRouter = require("./router/user")
 
-app.use("/", authRouter, profileRouter, requestRouter)
+app.use("/", authRouter, profileRouter, requestRouter, userRouter)
 
 connectDB().then(() => {
     console.log("Database Connection Established !!!");

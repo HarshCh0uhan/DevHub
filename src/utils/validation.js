@@ -22,4 +22,20 @@ const validateProfileEditData = (req) => {
     return isEditAloowed;
 }
 
-module.exports = {validateSignUpData, validateProfileEditData}
+const validSendStatus = (status) => {
+    const ALLOWED_STATUS = ["interested", "ignore"];
+
+    const isStatus = (ALLOWED_STATUS.includes(status)) ? true : false;
+
+    return isStatus;
+}
+
+const validReviewStatus = (status) => {
+    const ALLOWED_STATUS = ["accept", "reject"];
+
+    const isStatus = (ALLOWED_STATUS.includes(status)) ? true : false;
+
+    return isStatus;
+}
+
+module.exports = {validateSignUpData, validateProfileEditData, validSendStatus, validReviewStatus}

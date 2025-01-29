@@ -55,21 +55,19 @@ const userSchema = new mongoose.Schema({
           },
         lowercase: true
     },
+    about: {
+        type: String,
+        minLength: 10,
+        maxLength: 100
+    },
     skills: {
         type: [String],
-        default: "NA",
         validate(skills){
             if(!skills.length >= 10){
                 throw new Error("A user can have at most 10 skills you wrote : " + skills.length)
             }
         }
     },
-    // about: {
-    //     type: String,
-    //     default: "NA",
-    //     minLength: 50,
-    //     maxLength: 100
-    // }
 }, {timestamps: true});
 
 userSchema.methods.getJWT = async function (){
