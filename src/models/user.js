@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
         minLength: 3,
         maxLength: 50,
         validate(value){
-            if(!validator.isAlpha(value)) throw new ErrorEvent("Invalid NAme : " + value)
+            if(!validator.isAlpha(value)) throw new ErrorEvent("Invalid Name : " + value)
         }
     },
     lastName: {
@@ -43,8 +43,8 @@ const userSchema = new mongoose.Schema({
     age: {
         type: Number,
         required: true,
-        min: 0,
-        max: 120
+        min: 18,
+        max: 120,
     },
     gender: {
         type: String,
@@ -53,12 +53,21 @@ const userSchema = new mongoose.Schema({
             values: ['male', 'female', 'other'],
             message: '{VALUE} is not a valid gender',
           },
-        lowercase: true
+        lowercase: true,
     },
     about: {
         type: String,
         minLength: 10,
-        maxLength: 100
+        maxLength: 100,
+    },
+    photoUrl: {
+        type: String,
+        default: "https://img.freepik.com/premium-vector/account-icon-user-icon-vector-graphics_292645-552.jpg?w=826",
+        validate(value) {
+            if(!validator.isURL(value)){
+                throw new ErrorEvent("Invalid Photo URL: " + value)
+            }
+        },
     },
     skills: {
         type: [String],

@@ -17,19 +17,28 @@ authRouter.post("/signup", async (req, res) => {
     validateSignUpData(req)
 
     // Encrypt
-    const {firstName, lastName, emailId, password, age, gender} = req.body
+    const {firstName, lastName, emailId, password, age, gender, photoUrl} = req.body
 
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = new User({
-        firstName, lastName, emailId, password: passwordHash, age, gender
+        firstName, lastName, emailId, password: passwordHash, age, gender, photoUrl
     });
 
-        await user.save()
-        res.send("User Added Successfully !!!");
+        const saveUser = await user.save()
+
+        // Create a JWT Token
+        const token = await user.getJWT();
+
+        console.log("Token : " + token)
+        
+        // Add the Token to Cookie and send the response back to ther server
+        res.cookie("token", token);
+
+        res.send(saveUser);
     }
     catch (err){
-        res.status(400).send("Error Saving the User : " + err.message);
+        res.status(400).send("Error : " + err.message);
     }
 })
 
@@ -56,11 +65,11 @@ authRouter.post("/login", async (req, res) => {
             // Add the Token to Cookie and send the response back to ther server
             res.cookie("token", token);
 
-            res.send("Login Successful !!!")
+            res.send(user)
         }
     }
     catch (err){
-        res.status(400).send("Error Saving the User : " + err.message);
+        res.status(400).send("Error : " + err.message);
     }
 })
 
