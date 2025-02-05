@@ -12,9 +12,11 @@ const userRouter = require("./router/user")
 
 app.use("/", authRouter, profileRouter, requestRouter, userRouter)
 
+const port = process.env.PORT || 3000;
+
 connectDB().then(() => {
     console.log("Database Connection Established !!!");
-    app.listen(3000, () => {
+    app.listen(port, () => {
         console.log("Listening to Server");
     })
 }).catch((err) => {
