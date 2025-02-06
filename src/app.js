@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express");
 const {connectDB} = require("./config/db")
 const cors = require("cors")
@@ -12,11 +13,9 @@ const userRouter = require("./router/user")
 
 app.use("/", authRouter, profileRouter, requestRouter, userRouter)
 
-const port = process.env.PORT || 3000;
-
 connectDB().then(() => {
     console.log("Database Connection Established !!!");
-    app.listen(port, () => {
+    app.listen(process.env.PORT, () => {
         console.log("Listening to Server");
     })
 }).catch((err) => {
