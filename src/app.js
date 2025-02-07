@@ -10,8 +10,9 @@ const authRouter = require("./router/auth")
 const profileRouter = require("./router/profile")
 const requestRouter = require("./router/request")
 const userRouter = require("./router/user")
+const premiumRouter = require("./router/premium")
 
-app.use("/", authRouter, profileRouter, requestRouter, userRouter)
+app.use("/", authRouter, profileRouter, requestRouter, userRouter, premiumRouter);
 
 connectDB().then(() => {
     console.log("Database Connection Established !!!");

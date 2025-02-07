@@ -62,8 +62,10 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
         // Duplications of Accepted and Rejected
         // Valid RequestId
         // Accept / Reject to Yourself
-        const connectionRequest = await ConnectionRequest.findOne({
-            _id: requestId, toUserId: loggedInUser._id, status: "interested"
+        let connectionRequest = await ConnectionRequest.findOne({
+            $or: [{_id: requestId, toUserId: loggedInUser._id, status: "interested"},
+                  {toUserId: requestId, fromUserId: loggedInUser._id, status: "accept"},
+                  {fromUserId: requestId, toUserId: loggedInUser._id, status: "accept"}]
         });
 
         if(!connectionRequest){
@@ -71,16 +73,25 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
         }
 
         // Accept / Reject
-        connectionRequest.status = status;
-
-        const data = await connectionRequest.save();
-
-        res.send("Connection Request is " + status);
+        if (status === "accept") {
+            connectionRequest.status = "accept";
+            await connectionRequest.save();
+            res.send("Connection Request is accepted");
+        } else {
+            await ConnectionRequest.findOneAndDelete({
+                $or: [{_id: requestId, toUserId: loggedInUser._id, status: "interested"},
+                    {toUserId: requestId, fromUserId: loggedInUser._id, status: "accept"},
+                    {fromUserId: requestId, toUserId: loggedInUser._id, status: "accept"}]
+            });
+            res.send("Request is Rejected" + connectionRequest);
+        }
 
     } 
     catch (err) {
         res.status(400).send("Somthing went wrong : " + err.message);
     }
 })
+
+requestRouter.get("/request/drop/:fromUserId", userAuth, async (req, res) => {})
 
 module.exports = requestRouter;
