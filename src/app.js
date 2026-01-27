@@ -4,7 +4,7 @@ const {connectDB} = require("./config/db")
 const cors = require("cors")
 const http = require('http')
 const app = express()
-app.use(cors({origin: "http://localhost:5173", credentials: true}));
+app.use(cors({origin: ["http://localhost:5173", "https://dev-hub-frontend-ruby.vercel.app"], credentials: true}));
 const {socketConnection} = require("./utils/socket")
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
