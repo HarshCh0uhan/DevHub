@@ -31,7 +31,13 @@ authRouter.post("/signup", async (req, res) => {
         console.log("Token : " + token)
         
         // Add the Token to Cookie and send the response back to ther server
-        res.cookie("token", token);
+        res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,       // required in HTTPS
+        sameSite: "None",   // required for cross-site cookies
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
 
         res.send(saveUser);
     }
@@ -61,7 +67,13 @@ authRouter.post("/login", async (req, res) => {
             console.log("Token : " + token)
             
             // Add the Token to Cookie and send the response back to ther server
-            res.cookie("token", token);
+            res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,       // required in HTTPS
+            sameSite: "None",   // required for cross-site cookies
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+
 
             res.send(user)
         }
