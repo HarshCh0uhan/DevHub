@@ -4,6 +4,7 @@ const {userAuth} = require("../middlewares/auth");
 const { ConnectionRequest } = require("../models/connectionRequest");
 const { validSendStatus, validReviewStatus } = require("../utils/validation");
 const { User } = require("../models/user");
+const mongoose = require("mongoose");
 
 requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
     try {
@@ -48,8 +49,18 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
     try {
 
         // loggedInUser -> Elon
-        const loggedInUser = req.user;
-        const {requestId, status} = req.params;
+        const loggedInUser = req.user;        
+        
+        const {requestId, status} = req.params;        
+        
+        const requestObjectId = new mongoose.Types.ObjectId(requestId);
+        
+        console.log(
+        requestId,
+        typeof requestId,
+        loggedInUser._id,
+        typeof loggedInUser._id
+        );
         
         // Check Status -> Accept / Reject / Other
 
@@ -63,10 +74,10 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
         // Valid RequestId
         // Accept / Reject to Yourself
         let connectionRequest = await ConnectionRequest.findOne({
-            $or: [{_id: requestId, toUserId: loggedInUser._id, status: "interested"},
-                  {toUserId: requestId, fromUserId: loggedInUser._id, status: "accept"},
-                  {fromUserId: requestId, toUserId: loggedInUser._id, status: "accept"}]
+            _id: requestObjectId, toUserId: loggedInUser._id, status: "interested",
         });
+        
+        console.log(connectionRequest);
 
         if(!connectionRequest){
             throw new Error("Connection Request Not Found !!!");

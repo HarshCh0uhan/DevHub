@@ -3,11 +3,9 @@ const authRouter = express.Router();
 const {validateSignUpData} = require("../utils/validation")
 const bcrypt = require("bcrypt")
 const {User} = require("../models/user")
-const cookieParser = require("cookie-parser")
 
 // Middleware used to Convert JSON -> Js Obj 
 authRouter.use(express.json())
-authRouter.use(cookieParser())
 
 // This is Create API - POST Method is used
 authRouter.post("/signup", async (req, res) => {

@@ -6,6 +6,8 @@ const http = require('http')
 const app = express()
 app.use(cors({origin: "http://localhost:5173", credentials: true}));
 const {socketConnection} = require("./utils/socket")
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 const authRouter = require("./router/auth")
 const profileRouter = require("./router/profile")
